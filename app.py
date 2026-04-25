@@ -17,21 +17,24 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'my_super_secret_key_expense_tracker_123')
 
 # Database configuration (supports Render PostgreSQL or local MySQL fallback)
-db_host = os.environ.get('DB_HOST')
-db_name = os.environ.get('DB_NAME')
-db_user = os.environ.get('DB_USER')
-db_password = os.environ.get('DB_PASSWORD')
-db_port = os.environ.get('DB_PORT', '5432')
+db_url = os.environ.get('DATABASE_URL')
 
-if db_host and db_name and db_user and db_password:
-    # Construct PostgreSQL connection string from separate components
-    db_url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-else:
-    # Fallback to single DATABASE_URL or local MySQL
-    db_url = os.environ.get('DATABASE_URL', 'mysql+pymysql://root:@localhost:3306/expense_tracker')
-    if db_url.startswith('postgres://'):
-        db_url = db_url.replace('postgres://', 'postgresql://', 1)
-        
+if not db_url:
+    # Try constructing from individual components
+    db_host = os.environ.get('DB_HOST')
+    db_name = os.environ.get('DB_NAME')
+    db_user = os.environ.get('DB_USER')
+    db_password = os.environ.get('DB_PASSWORD')
+    db_port = os.environ.get('DB_PORT', '5432')
+    if db_host and db_name and db_user and db_password:
+        db_url = f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    else:
+        db_url = 'mysql+pymysql://root:@localhost:3306/expense_tracker'
+
+# Fix Render's postgres:// scheme to postgresql://
+if db_url.startswith('postgres://'):
+    db_url = db_url.replace('postgres://', 'postgresql://', 1)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
