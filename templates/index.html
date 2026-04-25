@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <h1 class="hero-title neon-heading">Welcome to <br>SpendLog</h1>
+    <p class="hero-subtitle">
+        The ultimate futuristic tracker for managing your financial datascapes. Unlock deep analytical insights into
+        your assets and expenses with cutting-edge visual dashboards.
+    </p>
+    <div class="hero-actions">
+        <a href="{{ url_for('register') }}" class="cyber-btn cyber-btn-primary">INITIATE ACCOUNT</a>
+        <a href="{{ url_for('login') }}" class="cyber-btn cyber-btn-secondary">ACCESS SYSTEM</a>
+    </div>
+</div>
+
+<div class="features-grid container">
+    <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h3 class="feature-title neon-text-blue">Data Nexus</h3>
+        <p class="feature-text">
+            Visualize your expenses through highly detailed and responsive metric dashboards, updated in real-time.
+        </p>
+    </div>
+    <div class="feature-card">
+        <span class="feature-icon">🔒</span>
+        <h3 class="feature-title neon-text-green">Secure Vault</h3>
+        <p class="feature-text">
+            State-of-the-art cryptographic hashing guarantees your personal financial data remains strictly
+            confidential.
+        </p>
+    </div>
+    <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <h3 class="feature-title neon-text">Velocity Logging</h3>
+        <p class="feature-text">
+            Input the parameters of your expenses instantly and batch multiple transactions without friction.
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar for Add Expense -->
+    <aside class="sidebar glass-panel">
+        <h3 class="neon-heading-sm">Log Transaction</h3>
+
+        <!-- Add Smart Entry Here -->
+        <div class="smart-entry-container mt-3 mb-2">
+            <label class="text-muted" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Smart
+                Entry (AI)</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; width: 100%;">
+                <input type="text" id="smart-expense-input" class="cyber-input" placeholder="e.g. $15 for lunch today"
+                    style="padding: 0.8rem; flex: 1 1 150px; width: auto; min-width: 0;">
+                <button onclick="submitSmartExpense()" class="cyber-btn cyber-btn-secondary" id="smart-add-btn"
+                    style="padding: 0.8rem; flex: 0 0 auto; white-space: nowrap;">ADD</button>
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 1.5rem 0;">
+
+        <form method="POST" action="{{ url_for('add_expense') }}" class="cyber-form mt-2">
+            <div class="form-group">
+                <label for="date">Temporal Anchor (Date)</label>
+                <!-- Pre-fill to today if not provided via some logic, but HTML5 date handles this nicely -->
+                <input type="date" id="date" name="date" required class="cyber-input">
+            </div>
+            <div class="form-group">
+                <label for="category">Sector (Category)</label>
+                <input type="text" id="category" name="category" required class="cyber-input"
+                    placeholder="e.g. Food, Transport">
+            </div>
+            <div class="form-group">
+                <label for="amount">Credits (Amount)</label>
+                <input type="number" id="amount" name="amount" step="0.01" required class="cyber-input"
+                    placeholder="0.00">
+            </div>
+            <div class="action-buttons mt-4">
+                <button type="submit" name="action" value="submit" class="cyber-btn cyber-btn-primary">SUBMIT
+                    LOG</button>
+                <button type="submit" name="action" value="add_another" class="cyber-btn cyber-btn-secondary mt-2">LOG &
+                    ADD ANOTHER</button>
+            </div>
+        </form>
+    </aside>
+
+    <!-- Main Content for Visualizations -->
+    <main class="main-content glass-panel">
+        <div class="visualizer-header flex-between mb-4">
+            <h2 class="neon-heading">Data Nexus</h2>
+            <div class="visualizer-controls cyber-form">
+                <select id="timeframe-select" class="cyber-select">
+                    <option value="daily">Daily Analysis</option>
+                    <option value="weekly">Weekly Analysis</option>
+                    <option value="monthly">Monthly Analysis</option>
+                    <option value="yearly">Yearly Analysis</option>
+                    <option value="category">Category Distribution</option>
+                    <option value="tabular">Raw Data Stream (Tabular)</option>
+                </select>
+                <button onclick="updateVisuals()" class="cyber-btn cyber-btn-sm ml-2">INITIALIZE</button>
+            </div>
+        </div>
+
+        <div class="visualizer-body" id="visualizer-body">
+            <div id="chart-container" class="chart-container">
+                <canvas id="expenseChart"></canvas>
+            </div>
+            <div id="table-container" class="table-container" style="display: none;">
+                <table class="cyber-table w-100">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expense-table-body">
+                        <!-- Rows dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- If add_another was triggered, maybe focus the category field or show a micro animation -->
+{% if add_more %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById('category').focus();
+    });
+</script>
+{% endif %}
+
+<!-- AI Chatbot FAB and Modal -->
+<div class="chatbot-container">
+    <button id="chatbot-fab" onclick="toggleChat()" class="cyber-btn cyber-btn-primary"
+        style="border-radius: 50%; width: 60px; height: 60px; padding: 0; display: flex; justify-content: center; align-items: center; position: fixed; bottom: 30px; right: 30px; z-index: 1000; box-shadow: 0 0 20px rgba(45, 212, 191, 0.5);">
+        <span style="font-size: 1.5rem;">🤖</span>
+    </button>
+
+    <div id="chat-modal" class="glass-panel"
+        style="display: none; position: fixed; bottom: 100px; right: 30px; width: 350px; height: 450px; z-index: 1000; flex-direction: column; padding: 1.5rem;">
+        <div class="chat-header flex-between mb-3">
+            <h3 class="neon-heading-sm" style="font-size: 1.2rem;">SpendLog Advisor</h3>
+            <button onclick="toggleChat()"
+                style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">&times;</button>
+        </div>
+        <div id="chat-messages"
+            style="flex: 1; overflow-y: auto; margin-bottom: 1rem; padding-right: 0.5rem; display: flex; flex-direction: column; gap: 0.8rem;">
+            <div class="bot-msg"
+                style="background: rgba(45, 212, 191, 0.1); padding: 0.8rem; border-radius: 8px; border-left: 3px solid var(--neon-cyan); align-self: flex-start; max-width: 85%;">
+                Hello! I'm your AI advisor. Ask me anything about your expenses.
+            </div>
+        </div>
+        <div class="chat-input-area" style="display: flex; gap: 0.5rem;">
+            <input type="text" id="chat-input" class="cyber-input" placeholder="Ask a question..."
+                style="padding: 0.8rem;" onkeypress="handleChatKeyPress(event)">
+            <button onclick="sendChatMessage()" class="cyber-btn cyber-btn-primary" id="chat-send-btn"
+                style="padding: 0.8rem;">&uarr;</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendLog</title>
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="glow-bg"></div>
+    <div class="overlay-mesh"></div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="neon-text">SpendLog</span>
+        </div>
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+            <span class="welcome-text">Welcome, {{ current_user.name }}</span>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin') }}" class="nav-btn">Admin</a>
+            {% endif %}
+            <a href="{{ url_for('dashboard') }}" class="nav-btn">Dashboard</a>
+            <a href="{{ url_for('logout') }}" class="nav-btn logout-btn">Logout</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="nav-btn">Login</a>
+            <a href="{{ url_for('register') }}" class="nav-btn">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="admin-header glass-panel mb-4 text-center">
+        <h2 class="neon-heading">COMMAND CENTER : ADMIN</h2>
+        <div class="flex-center mt-3 gap-4">
+            <div class="stat-card">
+                <span class="stat-label">Total Entities</span>
+                <span class="stat-value neon-text-blue">{{ user_count }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Total Credits Flowing</span>
+                <span class="stat-value neon-text-green">${{ "%.2f"|format(total_expenses) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Sidebar for User Selection (Bonus feature) or Global Visuals -->
+        <aside class="sidebar glass-panel">
+            <h3 class="neon-heading-sm">Global Surveillance</h3>
+            <p class="text-muted mt-2">View analytics across all registered entities.</p>
+            <div class="cyber-form mt-4">
+                <label for="admin-timeframe-select">Global Analysis Mode</label>
+                <select id="timeframe-select" class="cyber-select">
+                    <option value="daily">Daily Analysis</option>
+                    <option value="weekly">Weekly Analysis</option>
+                    <option value="monthly">Monthly Analysis</option>
+                    <option value="yearly">Yearly Analysis</option>
+                    <option value="category">Category Distribution</option>
+                    <option value="tabular">Raw Data Stream (Tabular)</option>
+                </select>
+                <!-- Include user filter -->
+                <label for="user-select" class="mt-3">Target Entity</label>
+                <select id="user-select" class="cyber-select">
+                    <option value="all">All Entities</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.name }} ({{ user.email }})</option>
+                    {% endfor %}
+                </select>
+
+                <button onclick="updateVisuals(true)" class="cyber-btn cyber-btn-primary mt-4 w-100">INITIALIZE SCANS</button>
+            </div>
+        </aside>
+
+        <!-- Main Content for Visualizations -->
+        <main class="main-content glass-panel">
+            <div class="visualizer-body" id="visualizer-body">
+                <div id="chart-container" class="chart-container">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+                <div id="table-container" class="table-container" style="display: none;">
+                    <table class="cyber-table w-100">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-table-body">
+                            <!-- Rows dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
