@@ -58,6 +58,15 @@ class Expense(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Initialize database tables if they don't exist (Crucial for Render/Gunicorn)
+with app.app_context():
+    db.create_all()
+    # Create default admin if not exists
+    if not User.query.filter_by(email='admin@tracker.com').first():
+        admin = User(name='Admin', email='admin@tracker.com', password_hash=generate_password_hash('admin', method='pbkdf2:sha256'), is_admin=True)
+        db.session.add(admin)
+        db.session.commit()
+
 # Routes
 @app.route('/')
 def index():
@@ -268,11 +277,4 @@ def api_chat():
 
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        # Create default admin if not exists
-        if not User.query.filter_by(email='admin@tracker.com').first():
-            admin = User(name='Admin', email='admin@tracker.com', password_hash=generate_password_hash('admin', method='pbkdf2:sha256'), is_admin=True)
-            db.session.add(admin)
-            db.session.commit()
     app.run(debug=True, port=5000)
